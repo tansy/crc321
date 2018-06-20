@@ -1,0 +1,37 @@
+# crc321 Makefile
+# under name makefile-gnu as qmake will overwrite it with its own
+# in case of parallel/non-qt-creator build use:
+# $ make -f makefile-gnu
+#
+
+CC       = gcc
+INCLUDES =
+LIBS     =
+WARNINGS = -Wall
+CFLAGS   = -O2 $(WARNINGS)
+
+SRCS     = crc321.c
+OBJS     = $(SRCS:.c=.o)
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(INCLUDES) $*.c
+
+TARGET  = crc321
+
+PREFIX   = /usr/local
+
+all      : $(TARGET)
+
+$(TARGET) : $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LIBS)
+
+clean :
+	rm -rf *.o $(TARGET) core *~
+
+install :
+	$(MAKE)
+	install $(TARGET) $(PREFIX)/bin
+
+uninstall:
+	cd $(PREFIX)/bin; rm $(TARGET)
+
