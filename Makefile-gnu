@@ -1,0 +1,78 @@
+#!/usr/bin/make
+
+#DEBUG = -DDEBUG1
+# $ make -f Makefile-gnu DEBUG="-DDEBUG -g"
+DEBUG = 
+
+WARNINGS = -Wall
+CFLAGS += $(WARNINGS) -O2 $(DEBUG)
+CXXFLAGS += $(WARNINGS) -O2 $(DEBUG)
+LFLAGS = 
+
+C_INCLUDES = -I.
+C_LIBS = -L.
+
+CC = gcc
+CXX = g++
+LINK = gcc
+
+# resource compiler
+RESC = windres -J rc
+
+INSTALL_BASEDIR = /usr/local
+
+########## rules
+.SUFFIXES :  .c .cpp .cc .rc .o .exe
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(C_INCLUDES) $*.c
+
+.cpp.o:
+	$(CXX) -c $(CXXFLAGS) $(CXX_INCLUDES) $*.cpp
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(CXX_INCLUDES) $*.cc
+
+.rc.o:
+	$(RESC) -i $^ -o $@
+
+########## sources
+C_SRCS = \
+	crc321.c \
+	crc322.c \
+
+
+C_OBJS += $(C_SRCS:.c=.o)
+#CXX_OBJS += $(CXX_SRCS:.cc=.o)
+#CXX_OBJS += $(CXX_SRCS:.cpp=.o)
+
+OBJS = $(C_OBJS) $(RES_OBJS) 
+
+#extension, if exists (like in dos/windoze)
+#EXEX=.exe
+
+TARGETS = crc321 crc322
+
+all: $(TARGETS)
+
+crc321: crc321.o
+#	$(CXX) $(LFLAGS) $(CXX_LIBS) -o $@ $^
+	$(CC) -o $@ $^ $(LFLAGS) $(C_LIBS)
+
+crc322: crc322.o
+	$(CC) -o $@ $^ $(LFLAGS) $(C_LIBS)
+
+install:
+#	cp 322$(EXEX) $(INSTALL_BASEDIR)/bin
+	$(foreach var,$(TARGETS),cp $(var)$(EXEX) $(INSTALL_BASEDIR)/bin;)
+
+clean:
+	$(RM) *.o *~ core* $(TARGETS)
+
+####
+
+objs: 
+	@echo $(C_OBJS)
+
+LFLAGS: 
+	@echo $(LFLAGS)
